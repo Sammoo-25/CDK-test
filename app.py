@@ -4,14 +4,17 @@ import os
 import aws_cdk as cdk
 
 from cdk_test.cdk_test_stack import CdkTestStack
-
+from aws_cdk import Fn
 from cdk_test.vpc_stack import VPCStack
 from cdk_test.security_stack import SecurityStack
 from cdk_test.baston_stack import BastionStack
 from cdk_test.kms_stack import KMSStack
 from cdk_test.s3_stack import S3Stack
 from cdk_test.RDS_stack import RDSStack
-
+from cdk_test.redis_stack import RedisStack
+from cdk_test.cognito_stack import CognitoStack
+from cdk_test.apigt_stack import APIStack
+from cdk_test.lambda_stack import LambdaStack
 
 app = cdk.App()
 cdk_test_vpc = VPCStack(app, 'cdk-test-vpc')
@@ -20,5 +23,10 @@ bastion_stack = BastionStack(app, 'bastion', vpc=cdk_test_vpc.vpc, sg=security_s
 kms_stack = KMSStack(app, 'kms')
 s3_stack = S3Stack(app, 's3buckets')
 rds_stack = RDSStack(app, 'rds', vpc=cdk_test_vpc.vpc, lambdasg=security_stack.lambda_sg, bastionsg=security_stack.bastion_sg, kmskey=kms_stack.kms_rds)
+redis_stack = RedisStack(app, 'redis', vpc=cdk_test_vpc.vpc, redissg=Fn.import_value('redis-sg-export'))
+cognito_stack = CognitoStack(app, 'cognito')
+api_gw_stack = APIStack(app, 'api-gw')
+lambda_stack = LambdaStack(app, 'lambda')
+
 
 app.synth()

@@ -2,6 +2,7 @@ from aws_cdk import (
     aws_ec2 as ec2,
     aws_iam as iam,
     aws_ssm as ssm,
+    CfnOutput,
     Stack,
 )
 from constructs import Construct
@@ -26,6 +27,14 @@ class SecurityStack(Stack):
                                             description="SG for Bastion Host",
                                             allow_all_outbound=True,
                                             )
+
+        redis_sg = ec2.SecurityGroup(self, 'redissg',
+                                            security_group_name='redis-sg',
+                                            vpc=vpc,
+                                            description="SG for Redis Cluster",
+                                            allow_all_outbound=True,
+                                            )
+        redis_sg.add_ingress_rule(self.lambda_sg, ec2.Port.tcp(6379), "Access from Lambda")
         self.bastion_sg.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(22), "SSH Access")
 
         lambda_role = iam.Role(self, 'lmbdarole',
@@ -40,6 +49,11 @@ class SecurityStack(Stack):
         lambda_role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name(
             managed_policy_name='service-role/AWSLambdaBasicExecutionRole'
         ))
+
+        CfnOutput(self, 'redis-export',
+                  export_name='redis-sg-export',
+                  value=redis_sg.security_group_id
+                  )
 
         # SSM Parameters
         ssm.StringParameter(self, 'lambda-param',
