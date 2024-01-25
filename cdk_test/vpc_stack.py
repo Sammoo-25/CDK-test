@@ -37,7 +37,6 @@ class VPCStack(Stack):
                                    cidr_mask=24
                                ),
                            ],
-                           nat_gateways=1
                            )
         ssm.StringParameter(self, 'VPCIdParameter',
                             string_value=self.vpc.vpc_id,

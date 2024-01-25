@@ -12,8 +12,6 @@ class SecurityStack(Stack):
     def __init__(self, scope: Construct, id: str, vpc: ec2.Vpc, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
-        # prj_name = self.node.try_get_context("Project_name")
-        # env_name = self.node.try_get_context("env")
 
         self.lambda_sg = ec2.SecurityGroup(self, 'lambdasg',
                                       security_group_name='lambda-sg',
