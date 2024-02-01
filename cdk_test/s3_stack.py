@@ -57,6 +57,27 @@ class S3Stack(Stack):
                   export_name='build-artifacts-bucket'
                   )
 
+        #FrontEnd Bucket
+        frontend_bucket = s3.Bucket(self, "bucket-frontend",
+                                    access_control=s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
+                                    encryption=s3.BucketEncryption.S3_MANAGED,
+                                    bucket_name=f'{account_id}-{env_name}-frontend-test-bucket',
+                                    block_public_access=s3.BlockPublicAccess(
+                                        block_public_policy=True,
+                                        block_public_acls=True,
+                                        ignore_public_acls=True,
+                                        restrict_public_buckets=True
+                                    ),
+                                    removal_policy=RemovalPolicy.DESTROY
+                                    )
+
+        CfnOutput(self, 's3-frontend-bucket-export',
+                  value=frontend_bucket.bucket_name,
+                  export_name='frontend-bucket'
+                  )
+
+
+
 
 
 

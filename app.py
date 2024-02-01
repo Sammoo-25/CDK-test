@@ -15,6 +15,13 @@ from cdk_test.redis_stack import RedisStack
 from cdk_test.cognito_stack import CognitoStack
 from cdk_test.apigt_stack import APIStack
 from cdk_test.lambda_stack import LambdaStack
+from cdk_test.commit_stack import CodeCommitStack
+from cdk_test.codepipline_backend import CodePiplineBackendStack
+from cdk_test.ecr_stack import ECRStack
+from cdk_test.cdn_stack import CDNStack
+from cdk_test.acm_stack import ACMStack
+from cdk_test.codepipeline_frontend import CodePiplineFrontendStack
+
 
 app = cdk.App()
 cdk_test_vpc = VPCStack(app, 'cdk-test-vpc')
@@ -28,5 +35,14 @@ cognito_stack = CognitoStack(app, 'cognito')
 api_gw_stack = APIStack(app, 'api-gw')
 lambda_stack = LambdaStack(app, 'lambda')
 
+commit_repo = CodeCommitStack(app, 'code-commit')
+ecr_repo = ECRStack(app, 'ecr')
+
+cp_backend = CodePiplineBackendStack(app, 'cp-backend', art_bucket_name=Fn.import_value('build-artifacts-bucket'))
+
+#Frontend
+cdn_stack = CDNStack(app, 'cdn', s3bucket=Fn.import_value('frontend-bucket'))
+acm_stack = ACMStack(app, 'acm')
+cp_frontend = CodePiplineFrontendStack(app,'cp-frontend', webhostingbucket=Fn.import_value('frontend-bucket'))
 
 app.synth()
